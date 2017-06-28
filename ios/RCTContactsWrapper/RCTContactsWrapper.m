@@ -134,11 +134,61 @@ RCT_EXPORT_METHOD(getEmail:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseR
       //Return full name
       [contactData setValue:fullName forKey:@"name"];
       
-      //Return first phone number
-      if([phoneNos count] > 0) {
-        CNPhoneNumber *phone = ((CNLabeledValue *)phoneNos[0]).value;
-        [contactData setValue:phone.stringValue forKey:@"phone"];
+      NSMutableArray *phoneNumbers = [[NSMutableArray alloc] init];
+
+      for (CNLabeledValue<CNPhoneNumber*>* labeledValue in contact.phoneNumbers) {
+          NSMutableDictionary* phone = [NSMutableDictionary dictionary];
+          NSString * label = [CNLabeledValue localizedStringForLabel:[labeledValue label]];
+          NSString* value = [[labeledValue value] stringValue];
+
+          if(value) {
+              if(!label) {
+                  label = [CNLabeledValue localizedStringForLabel:@"other"];
+              }
+              [phone setObject: value forKey:@"number"];
+              [phone setObject: label forKey:@"label"];
+              [phoneNumbers addObject:phone];
+          }
       }
+      [contactData setValue:phoneNumbers forKey:@"phone"];
+
+      NSMutableArray *postalAddresses = [[NSMutableArray alloc] init];
+
+      for (CNLabeledValue<CNPostalAddress*>* labeledValue in contact.postalAddresses) {
+          CNPostalAddress* postalAddress = labeledValue.value;
+          NSMutableDictionary* address = [NSMutableDictionary dictionary];
+
+          NSString* street = postalAddress.street;
+          if(street){
+              [address setObject:street forKey:@"street"];
+          }
+          NSString* city = postalAddress.city;
+          if(city){
+              [address setObject:city forKey:@"city"];
+          }
+          NSString* region = postalAddress.city;
+          if(region){
+              [address setObject:region forKey:@"region"];
+          }
+          NSString* postCode = postalAddress.postalCode;
+          if(postCode){
+              [address setObject:postCode forKey:@"postCode"];
+          }
+          NSString* country = postalAddress.country;
+          if(country){
+              [address setObject:country forKey:@"country"];
+          }
+
+          NSString* label = [CNLabeledValue localizedStringForLabel:labeledValue.label];
+          if(label) {
+              [address setObject:label forKey:@"label"];
+
+              [postalAddresses addObject:address];
+          }
+      }
+
+      [contactData setValue:postalAddresses forKey:@"postalAddresses"];
+
       
       //Return first email address
       if([emailAddresses count] > 0) {
