@@ -166,13 +166,13 @@ RCT_EXPORT_METHOD(getEmail:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseR
           if(city){
               [address setObject:city forKey:@"city"];
           }
-          NSString* region = postalAddress.city;
-          if(region){
-              [address setObject:region forKey:@"region"];
+          NSString* state = postalAddress.state;
+          if(state){
+              [address setObject:state forKey:@"state"];
           }
-          NSString* postCode = postalAddress.postalCode;
-          if(postCode){
-              [address setObject:postCode forKey:@"postCode"];
+          NSString* zipCode = postalAddress.postalCode;
+          if(zipCode){
+              [address setObject:zipCode forKey:@"zipCode"];
           }
           NSString* country = postalAddress.country;
           if(country){
@@ -188,7 +188,6 @@ RCT_EXPORT_METHOD(getEmail:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseR
       }
 
       [contactData setValue:postalAddresses forKey:@"postalAddresses"];
-
       
       //Return first email address
       if([emailAddresses count] > 0) {
